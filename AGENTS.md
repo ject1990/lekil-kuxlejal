@@ -19,7 +19,7 @@ Placa identificada por el usuario: ESP32 clásico ESP32-D0WD-V3, CH340, COM6, 11
 
 - Frontend React/TypeScript/Vite en `frontend/`; un único backend FastAPI/SQLModel en `backend/`.
 - SQLite con integridad referencial y migraciones Alembic versionadas. No reemplazar migraciones por `create_all` en operación.
-- El frontend recibe información de la API; nunca accede directamente a hardware ni a SQLite.
+- El frontend recibe y persiste información a través de la API; nunca accede a SQLite. Excepción autorizada por el usuario el 25/10/2026: en la modalidad alojada, Web Serial puede leer el USB seleccionado explícitamente y enviar diagnósticos a la API protegida. Sin comandos de actuación. El lector Python local permanece disponible.
 - El servidor escucha en la interfaz local. No exponerlo a una red ni habilitar control físico sin una instrucción específica.
 - No incorporar PHP, Firebase, MongoDB, Docker ni servicios de nube como dependencias principales.
 - Revisar consumidores, pruebas y documentación antes de modificar contratos compartidos.

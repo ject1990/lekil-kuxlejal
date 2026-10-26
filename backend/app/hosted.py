@@ -129,7 +129,9 @@ def create_hosted_app(*, frontend_dir: Path | None = None) -> FastAPI:
     from .main import create_app
 
     application = create_app(database_url)
-    application.description = "DOMO VITAL: acceso compartido protegido. Modo observación; sin conexión serial remota."
+    application.description = "DOMO VITAL: acceso protegido y diagnóstico USB desde el navegador. Sólo observación."
     application.add_middleware(HostedAccess, credential=f"{username}:{password}".encode("utf-8"))
+    from .web_serial import create_web_serial_router
+    application.include_router(create_web_serial_router())
     application.mount("/", FrontendFiles(directory=str(directory)), name="frontend")
     return application

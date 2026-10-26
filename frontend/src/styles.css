@@ -661,3 +661,15 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   .decision-map-inspector { padding: 20px 16px; }
   .decision-map-inspector dl { grid-template-columns: minmax(0,1fr); }
 }
+
+/* Direct USB reading in the hosted application. */
+.usb-panel { padding: 24px; margin-bottom: 24px; }
+.usb-heading { display: flex; align-items: flex-start; gap: 14px; }
+.usb-heading h2 { font-size: 21px; margin: 7px 0; }
+.usb-heading p, .usb-status { font-size: 13px; line-height: 1.7; color: var(--muted); }
+.usb-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0 14px; }
+.usb-panel .field-help { margin-top: 12px; line-height: 1.7; }
+.usb-facts { padding: 16px 0; margin-bottom: 0; border-top: 1px solid var(--border); }
+.usb-notice { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border: 1px solid #45523e; background: #233427; border-radius: 7px; padding: 11px 14px; margin-bottom: 20px; font-size: 12px; }
+.usb-notice a { color: var(--gold); text-decoration: underline; margin-left: auto; }
+@media (max-width: 600px) { .usb-panel { padding: 16px; } .usb-heading .registered-icon { display: none; } .usb-actions .button { white-space: normal; } }

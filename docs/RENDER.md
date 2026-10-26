@@ -115,8 +115,9 @@ copia antes de reemplazar la base; nunca sobrescribas una base activa.
 - No se publican archivos del repositorio, bases, documentos ni tokens mediante
   el servidor estático: únicamente `frontend/dist`.
 - La entrada serial `/api/internal/*` está bloqueada en esta modalidad, incluso
-  con contraseña. El ESP32 conectado por USB a tu PC no se conecta automáticamente
-  a Render. No hay control físico ni nuevas lecturas simuladas.
+  con contraseña. La conexión autorizada del navegador utiliza una ruta diferente,
+  `/api/web-serial/*`, con autenticación, comprobación de origen y validación del
+  protocolo. No hay control físico ni lecturas ambientales simuladas.
 - Se utiliza una única instancia y un trabajador para SQLite. No habilites
   varias réplicas con esta configuración. Los 512 MB deben validarse con la
   carga real, especialmente las comparaciones de escenarios.
@@ -130,3 +131,71 @@ Referencias oficiales:
 - https://render.com/docs/python-version
 - https://render.com/docs/disks
 - https://render.com/pricing
+
+
+## Conexión USB desde la aplicación web · 25 de octubre de 2026
+
+El usuario autorizó leer el ESP32 directamente desde la página alojada. Se
+conserva el lector Python local; esta alternativa no necesita iniciar Python ni
+Node.js en la computadora que tiene el USB. El navegador lee el puerto elegido
+por la persona y envía los mensajes al mismo backend protegido en Render.
+
+1. Publica los archivos de esta actualización en `deploy/render`.
+2. En Render abre el servicio `lekil-kuxlejal` y selecciona **Manual Deploy →
+   Deploy latest commit**. Espera **Live**. No cambian variables ni disco.
+3. Abre la aplicación HTTPS en Chrome o Edge de escritorio, inicia sesión y
+   entra en **Configuración → Conectar mi ESP32**.
+4. Conecta la placa con un cable USB de datos. Cierra cualquier monitor serial,
+   Arduino/PlatformIO o lector Python que esté usando ese mismo puerto.
+5. Pulsa **Conectar ESP32 por USB**, selecciona el puerto y autoriza el acceso.
+   El permiso se solicita sólo tras ese clic; no se conecta hardware en segundo
+   plano ni se cargan programas en la placa.
+6. Primero verás «USB abierto». La placa aparece al recibir un mensaje válido.
+   Un heartbeat reciente hace que la tarjeta muestre **Conectado**; confirma que
+   aumenta el tiempo activo y el contador de mensajes guardados. No basta con
+   registrar una ficha manual o abrir el puerto.
+7. Usa **Desconectar** antes de cerrar. La navegación dentro de la aplicación
+   conserva el lector. Una recarga o el cierre de la pestaña lo detiene; al volver
+   debes pulsar Conectar otra vez. Mantén la computadora despierta y con internet.
+
+Si al retirar el cable el cierre puede enviarse, la tarjeta pasa a Desconectado.
+Si se pierde internet o se cierra abruptamente la página, el heartbeat caduca a
+los 10 segundos; al consultar la API no se informa una conexión vigente. Un
+monitor suspendido en segundo plano no garantiza lectura continua. No hay
+reconexión automática ni cola durable: se prioriza el mensaje pendiente más
+reciente y se muestran descartes; los registros ya confirmados quedan en SQLite.
+
+El firmware esperado es el protocolo existente de `firmware/src/main.cpp`:
+ESP32 clásico, 115200 baudios, `hello`/`heartbeat`, versión de protocolo 1. El
+firmware 0.2.0 no mide temperatura ni humedad. La función no conecta sensores,
+no asigna pines, no graba firmware ni ejecuta control físico. La apertura del
+USB puede reiniciar algunas placas según su adaptador; DTR/RTS se dejan inactivos.
+
+Implementación: sesiones efímeras de tres minutos de inactividad (máximo 32),
+mensajes de hasta 2048 bytes, cuerpo HTTP limitado, tasa por sesión acotada,
+rechazo de formatos/identidades incorrectos, claves JSON duplicadas, secuencias
+repetidas, futuras y mensajes atrasados. La hora del navegador se alinea con la
+respuesta inicial del servidor; las confirmaciones rechazadas no aumentan el
+contador de guardado. Las líneas se envían sin parsear/reconvertir sus enteros
+64 bits en JavaScript. El backend reutiliza el servicio de persistencia local.
+Las sesiones caducan al reiniciar Render: pulsa Desconectar y Conectar de nuevo.
+
+Cada conexión tiene un identificador de origen propio, sin inventar un COM
+que el navegador no revela. Una desconexión no marca otras conexiones como
+retiradas. El origen es el navegador de una persona autorizada; no constituye
+atestación criptográfica del hardware. La clave compartida conserva los mismos
+límites de acceso del resto de la aplicación. No se añade una nueva migración.
+
+La lectura directa depende de Web Serial. Cuando no existe soporte se muestra
+un aviso, el botón queda deshabilitado y la consulta del resto de la aplicación
+continúa disponible. Documentación primaria:
+https://developer.chrome.com/docs/capabilities/serial
+
+Pruebas: 193 pruebas de backend, 17 de frontend y build de producción correctos.
+QA con Chromium, FastAPI real y SQLite temporal: permiso solicitado desde clic,
+115200, navegación sin perder el lector, recepción, desconexión, reconexión sin
+duplicar identidad, fallo de internet y caducidad, mensajes repetidos, UTF-8
+inválido, puerto ocupado, cancelación y navegador no compatible. Vista de 390px
+sin desbordamiento. El USB se sustituyó por un doble sólo en las pruebas: la
+verificación con la placa física y el HTTPS de Render queda pendiente de subir
+esta actualización. Ningún diagnóstico de prueba se envió al servicio operativo.

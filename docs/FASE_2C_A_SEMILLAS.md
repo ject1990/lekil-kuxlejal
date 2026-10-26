@@ -227,3 +227,31 @@ lectura USB remota ni control físico; sin tarea de respaldo automático. Los
 512 MB son una configuración inicial pendiente de medir con carga real en
 Render, no una garantía de capacidad. La configuración aún debe probarse en
 la infraestructura contratada y con HTTPS del proveedor.
+
+
+## USB directo desde la web · 25 de octubre de 2026
+
+El servicio de Render anterior ya fue creado por el usuario y se comprobó
+`/api/health` con API y base conectadas. A solicitud expresa posterior se añade
+Web Serial sólo a la interfaz alojada. Esto sustituye la limitación de lectura
+USB remota descrita en la preparación inicial; no altera los informes históricos.
+
+La conexión requiere un clic y permiso del navegador. Se conserva el protocolo
+serial de diagnóstico existente y el firmware, sin sensores nuevos ni actuación.
+La API protegida recibe líneas originales y valida identidad, secuencia, tamaño,
+fecha y origen; sólo el backend persiste los datos. La entrada interna del lector
+Python sigue cerrada en alojamiento y el arranque local no expone las nuevas rutas.
+Se documenta la excepción autorizada de acceso USB en AGENTS.md y su uso completo
+en docs/RENDER.md. No se modifica Itzamná, Semillas, migraciones ni dependencias.
+
+Validación: 193 pruebas de backend y 17 de frontend aprobadas, compilación de
+producción correcta. Chromium con USB simulado, API real y SQLite temporal verifica
+lectura, navegación, desconexión, reconexión, falta de internet, caducidad, errores
+de formato, cancelación, puerto ocupado y ausencia de Web Serial. Los datos
+sintéticos de QA no entraron en la aplicación publicada. Persiste únicamente la
+advertencia de deprecación Starlette/AnyIO ya conocida.
+
+Pendiente de la persona usuaria: subir los archivos a deploy/render, desplegar
+el commit en el mismo servicio y verificar con su placa física. No se ha medido
+un USB real desde este entorno. La temperatura/humedad permanecen sin datos
+porque el firmware actual sólo identifica la placa y emite heartbeat.

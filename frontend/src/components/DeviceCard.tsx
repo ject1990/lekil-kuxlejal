@@ -21,7 +21,7 @@ export default function DeviceCard({ device }: { device: Device }) {
     </div>
     <dl className="serial-device-fields">
       <div><dt>Chip</dt><dd>{device.model || 'Pendiente de identificación'}</dd></div>
-      <div><dt>Puerto</dt><dd>{device.serial_port || 'No definido'}</dd></div>
+      <div><dt>Puerto</dt><dd>{device.serial_port?.startsWith('USB navegador ') ? 'USB de la computadora · navegador' : device.serial_port || 'No definido'}</dd></div>
       <div><dt>Última comunicación</dt><dd>{device.last_seen_at ? formatDate(device.last_seen_at) : 'Sin comunicación recibida'}</dd></div>
       <div><dt>Tiempo activo · último mensaje</dt><dd>{uptime(device.uptime_ms)}</dd></div>
       <div><dt>Versión de firmware</dt><dd>{device.firmware_version || 'No recibida'}</dd></div>
