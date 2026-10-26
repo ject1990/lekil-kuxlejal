@@ -92,7 +92,7 @@ export default function Configuration() {
   }
 
   function saved() {
-    setMessage(dialog === 'zone' ? 'Zona registrada. La configuración se guardó en la base local.' : 'Dispositivo registrado. La conexión física permanece pendiente.')
+    setMessage(dialog === 'zone' ? 'Zona registrada. La configuración se guardó en la base de datos.' : 'Dispositivo registrado. La conexión física permanece pendiente.')
     if (dialog === 'zone') void zones.reload()
     else void devices.reload()
   }

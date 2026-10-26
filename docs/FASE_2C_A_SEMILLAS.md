@@ -186,3 +186,44 @@ Se modifican contratos y rutas de Semillas, frontend, pruebas y documentación. 
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\check.ps1
 node --test frontend/tests/seed-information.test.mjs frontend/tests/seed-registration.test.mjs frontend/tests/decision-map.test.mjs
 ```
+
+
+## Preparación opcional de alojamiento · 25 de octubre de 2026
+
+Por solicitud del usuario se prepara su copia `ject1990/lekil-kuxlejal` para
+Render, en la rama `deploy/render`. El despliegue efectivo y su facturación
+requieren crear el servicio en la cuenta del usuario; esta entrega no acredita
+una publicación ya funcionando en Render.
+
+Se añade una entrada ASGI independiente (`app.hosted:create_hosted_app`), que
+sirve exclusivamente el build de React y protege interfaz y API con HTTP Basic
+sobre HTTPS. Requiere credenciales explícitas y un SQLite absoluto dentro del
+directorio persistente existente. La comprobación `/api/health` permanece pública
+sin exponer registros. Las escrituras ajenas al origen y la entrada serial
+remota están bloqueadas. El inicio local y los contratos de datos se conservan.
+
+`render.yaml` define un servicio Python, un disco de 1 GB y secretos que el
+usuario introduce en Render. El build incluye React y el motor de referencia
+original, con Python 3.12 y las restricciones de dependencias existentes. No
+se modifica Itzamná ni se incorpora Docker o un SDK de nube. Los despliegues
+automáticos quedan apagados. `docs/RENDER.md` detalla la creación, comprobación,
+respaldo lógico manual y límites del acceso compartido.
+
+Verificación en Linux con Python 3.12.14: **180 pruebas de backend aprobadas**
+(135 existentes y 45 de alojamiento), **14 pruebas de frontend aprobadas** y
+compilación de producción correcta. Se ejecutaron los pasos equivalentes de
+`scripts/check.ps1`; ese script usa ejecutables de Windows, no disponibles en
+este entorno Linux. Las bases y credenciales de QA son temporales. Se comprobó
+la persistencia tras reinicio, rechazo de accesos sin contraseña, entradas
+malformadas, rutas privadas, escrituras de otro origen y configuración incompleta.
+
+En navegador se verificaron ocho rutas con recarga, API autenticada real con
+SQLite temporal, ausencia de errores JavaScript y vista móvil de 390 × 844 sin
+desbordamiento horizontal. No se añadieron registros a la base operativa.
+Persiste la advertencia conocida de deprecación de Starlette/AnyIO.
+
+Límites: acceso con clave compartida, sin usuarios individuales ni roles; sin
+lectura USB remota ni control físico; sin tarea de respaldo automático. Los
+512 MB son una configuración inicial pendiente de medir con carga real en
+Render, no una garantía de capacidad. La configuración aún debe probarse en
+la infraestructura contratada y con HTTPS del proveedor.

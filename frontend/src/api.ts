@@ -80,7 +80,9 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
     }
     return await response.json() as T
   } catch (error) {
-    if (error instanceof TypeError) throw new Error('No se pudo conectar con la API local. Comprueba que el backend esté iniciado.')
+    if (error instanceof TypeError) throw new Error(import.meta.env.VITE_HOSTED === 'true'
+      ? 'No se pudo conectar con la API. Comprueba tu conexión y vuelve a intentarlo.'
+      : 'No se pudo conectar con la API local. Comprueba que el backend esté iniciado.')
     if (error instanceof DOMException && error.name === 'AbortError') throw new Error('La API no respondió en 10 segundos. Vuelve a intentarlo.')
     if (error instanceof SyntaxError) throw new Error('La API devolvió una respuesta que no se pudo interpretar.')
     throw error

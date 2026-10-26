@@ -16,7 +16,7 @@ export function ErrorNotice({ message, retry }: { message: string; retry: () => 
 }
 
 export function ResourceState<T>({ resource, children }: { resource: Resource<T>; children: (data: T) => ReactNode }) {
-  if (resource.loading) return <div className="loading-state" role="status"><RefreshCw className="spin" size={18} /> Consultando API local…</div>
+  if (resource.loading) return <div className="loading-state" role="status"><RefreshCw className="spin" size={18} /> Consultando API…</div>
   if (resource.error) return <ErrorNotice message={resource.error} retry={() => void resource.reload()} />
   if (resource.data === undefined) return null
   return <>{children(resource.data)}</>
